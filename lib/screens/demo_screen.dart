@@ -26,9 +26,10 @@ class _DemoScreenState extends State<DemoScreen> {
       appBar: AppBar(
         title: const Text('Demonstracija animacija'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSizes.padding),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Odabir slova
             AnimatedCard(
@@ -69,88 +70,84 @@ class _DemoScreenState extends State<DemoScreen> {
             const SizedBox(height: AppSizes.padding),
             
             // Odabir alfabeta i stila
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: AnimatedCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Alfabet:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                AnimatedCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Alfabet:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.smallPadding),
+                      DropdownButton<AlphabetType>(
+                        value: _selectedAlphabet,
+                        isExpanded: true,
+                        items: [
+                          DropdownMenuItem(
+                            value: AlphabetType.latin,
+                            child: Text(AppStrings.latinAlphabet),
                           ),
-                        ),
-                        const SizedBox(height: AppSizes.smallPadding),
-                        DropdownButton<AlphabetType>(
-                          value: _selectedAlphabet,
-                          isExpanded: true,
-                          items: [
-                            DropdownMenuItem(
-                              value: AlphabetType.latin,
-                              child: Text(AppStrings.latinAlphabet),
-                            ),
-                            DropdownMenuItem(
-                              value: AlphabetType.cyrillic,
-                              child: Text(AppStrings.cyrillicAlphabet),
-                            ),
-                            DropdownMenuItem(
-                              value: AlphabetType.numbers,
-                              child: Text(AppStrings.numbers),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedAlphabet = value;
-                                _selectedLetter = _getLetters().first;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                          DropdownMenuItem(
+                            value: AlphabetType.cyrillic,
+                            child: Text(AppStrings.cyrillicAlphabet),
+                          ),
+                          DropdownMenuItem(
+                            value: AlphabetType.numbers,
+                            child: Text(AppStrings.numbers),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedAlphabet = value;
+                              _selectedLetter = _getLetters().first;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: AppSizes.smallPadding),
-                Expanded(
-                  child: AnimatedCard(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Stil:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                const SizedBox(height: AppSizes.smallPadding),
+                AnimatedCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Stil:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.smallPadding),
+                      DropdownButton<WritingStyle>(
+                        value: _selectedStyle,
+                        isExpanded: true,
+                        items: [
+                          DropdownMenuItem(
+                            value: WritingStyle.cursive,
+                            child: Text(AppStrings.cursive),
                           ),
-                        ),
-                        const SizedBox(height: AppSizes.smallPadding),
-                        DropdownButton<WritingStyle>(
-                          value: _selectedStyle,
-                          isExpanded: true,
-                          items: [
-                            DropdownMenuItem(
-                              value: WritingStyle.cursive,
-                              child: Text(AppStrings.cursive),
-                            ),
-                            DropdownMenuItem(
-                              value: WritingStyle.print,
-                              child: Text(AppStrings.print),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedStyle = value;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                          DropdownMenuItem(
+                            value: WritingStyle.print,
+                            child: Text(AppStrings.print),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedStyle = value;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -159,34 +156,30 @@ class _DemoScreenState extends State<DemoScreen> {
             const SizedBox(height: AppSizes.padding),
             
             // Animacija
-            Expanded(
-              child: AnimatedCard(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Animacija slova $_selectedLetter',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.padding),
-                      SizedBox(
-                        height: 300,
-                        child: Center(
-                          child: LetterAnimation(
-                            letter: _selectedLetter,
-                            alphabetType: _selectedAlphabet,
-                            writingStyle: _selectedStyle,
-                            autoPlay: true,
-                          ),
-                        ),
-                      ),
-                    ],
+            AnimatedCard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Animacija slova $_selectedLetter',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: AppSizes.padding),
+                  SizedBox(
+                    height: 300,
+                    child: Center(
+                      child: LetterAnimation(
+                        letter: _selectedLetter,
+                        alphabetType: _selectedAlphabet,
+                        writingStyle: _selectedStyle,
+                        autoPlay: true,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             

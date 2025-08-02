@@ -303,63 +303,70 @@ class _WritingScreenState extends State<WritingScreen>
             const Spacer(),
             
             // Dodatne opcije
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Column(
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TraceScreen(
-                            letter: widget.letter,
-                            alphabetType: widget.alphabetType,
-                            writingStyle: widget.writingStyle,
-                          ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                                    ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TraceScreen(
+                          letter: widget.letter,
+                          alphabetType: widget.alphabetType,
+                          writingStyle: widget.writingStyle,
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.touch_app),
-                    label: const Text('Prati liniju'),
-                  ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.touch_app),
+                  label: const Text('Prati liniju'),
                 ),
                 const SizedBox(width: AppSizes.smallPadding),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MultiplayerGame(
-                            letter: widget.letter,
-                            onScoreUpdate: (score) {
-                              // Handle score update
-                            },
-                            onGameComplete: () {
-                              // Handle game completion
-                            },
-                          ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiplayerGame(
+                          letter: widget.letter,
+                          onScoreUpdate: (score) {
+                            // Handle score update
+                          },
+                          onGameComplete: () {
+                            // Handle game completion
+                          },
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.emoji_events),
-                    label: const Text('Takmičenje'),
-                  ),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.emoji_events),
+                  label: const Text('Takmičenje'),
                 ),
-                TextButton.icon(
+                  ],
+                ),
+                const SizedBox(height: AppSizes.smallPadding),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                                    TextButton.icon(
                   onPressed: () {
                     // Navigacija na sledeće slovo
                   },
                   icon: const Icon(Icons.skip_next),
                   label: const Text('Sledeće'),
                 ),
+                const SizedBox(width: AppSizes.smallPadding),
                 TextButton.icon(
                   onPressed: () {
                     // Navigacija na napredak
                   },
                   icon: const Icon(Icons.assessment),
                   label: const Text('Napredak'),
+                ),
+                  ],
                 ),
               ],
             ),

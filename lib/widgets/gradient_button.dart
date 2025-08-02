@@ -136,12 +136,16 @@ class _AnimatedGradientButtonState extends State<AnimatedGradientButton>
                           ),
                         if (widget.icon != null && !widget.isLoading)
                           const SizedBox(width: 8),
-                        Text(
-                          widget.text,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        Flexible(
+                          child: Text(
+                            widget.text,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
@@ -283,12 +287,16 @@ class _GradientOutlinedButtonState extends State<GradientOutlinedButton>
                             ),
                             const SizedBox(width: AppSizes.smallPadding),
                           ],
-                          Text(
-                            widget.text,
-                            style: TextStyle(
-                              color: _isHovered ? hoverText : normalText,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          Flexible(
+                            child: Text(
+                              widget.text,
+                              style: TextStyle(
+                                color: _isHovered ? hoverText : normalText,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ],

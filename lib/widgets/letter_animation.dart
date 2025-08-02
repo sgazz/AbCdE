@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../models/letter.dart';
 import '../utils/constants.dart';
 
 class LetterAnimation extends StatefulWidget {
@@ -297,6 +298,7 @@ class _LetterAnimationState extends State<LetterAnimation>
               mainAxisSize: MainAxisSize.min,
               children: [
                 FloatingActionButton.small(
+                  heroTag: null, // Disable hero animation on iOS
                   onPressed: _startAnimation,
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -304,6 +306,7 @@ class _LetterAnimationState extends State<LetterAnimation>
                 ),
                 const SizedBox(width: 8),
                 FloatingActionButton.small(
+                  heroTag: null, // Disable hero animation on iOS
                   onPressed: _pauseAnimation,
                   backgroundColor: AppColors.secondary,
                   foregroundColor: Colors.white,

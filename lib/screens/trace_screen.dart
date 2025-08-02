@@ -205,24 +205,32 @@ class _TraceScreenState extends State<TraceScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                OutlinedButton.icon(
-                  onPressed: _resetTrace,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Ponovo'),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _resetTrace,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Ponovo'),
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Nazad'),
+                const SizedBox(width: AppSizes.smallPadding),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Nazad'),
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Navigacija na sledeće slovo
-                  },
-                  icon: const Icon(Icons.skip_next),
-                  label: const Text('Sledeće'),
+                const SizedBox(width: AppSizes.smallPadding),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      // Navigacija na sledeće slovo
+                    },
+                    icon: const Icon(Icons.skip_next),
+                    label: const Text('Sledeće'),
+                  ),
                 ),
               ],
             ),

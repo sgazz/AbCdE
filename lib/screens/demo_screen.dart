@@ -167,27 +167,31 @@ class _DemoScreenState extends State<DemoScreen> {
               child: Card(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSizes.padding),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Animacija slova $_selectedLetter',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.padding),
-                      Expanded(
-                        child: Center(
-                          child: LetterAnimation(
-                            letter: _selectedLetter,
-                            alphabetType: _selectedAlphabet,
-                            writingStyle: _selectedStyle,
-                            autoPlay: true,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Animacija slova $_selectedLetter',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: AppSizes.padding),
+                        SizedBox(
+                          height: 300,
+                          child: Center(
+                            child: LetterAnimation(
+                              letter: _selectedLetter,
+                              alphabetType: _selectedAlphabet,
+                              writingStyle: _selectedStyle,
+                              autoPlay: true,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -200,6 +204,7 @@ class _DemoScreenState extends State<DemoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(AppSizes.padding),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -220,12 +225,14 @@ class _DemoScreenState extends State<DemoScreen> {
                       ],
                     ),
                     const SizedBox(height: AppSizes.smallPadding),
-                    const Text(
-                      '• Odaberite slovo iz liste iznad\n'
-                      '• Animacija će pokazati kako se crta slovo\n'
-                      '• Koristite kontrole za pauziranje/ponavljanje\n'
-                      '• Možete promeniti alfabet i stil pisanja',
-                      style: TextStyle(fontSize: 14),
+                    Flexible(
+                      child: const Text(
+                        '• Odaberite slovo iz liste iznad\n'
+                        '• Animacija će pokazati kako se crta slovo\n'
+                        '• Koristite kontrole za pauziranje/ponavljanje\n'
+                        '• Možete promeniti alfabet i stil pisanja',
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ],
                 ),

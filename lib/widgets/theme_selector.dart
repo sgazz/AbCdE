@@ -206,7 +206,7 @@ class _ThemeSelectorState extends State<ThemeSelector> {
       case 'dečja':
         return Icons.child_care;
       case 'tamna':
-        return Icons.night_mode;
+        return Icons.dark_mode;
       case 'prirodna':
         return Icons.eco;
       case 'sport':

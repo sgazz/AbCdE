@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.writing_learning_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion  // Commented out to avoid NDK issues
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

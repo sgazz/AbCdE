@@ -11,28 +11,6 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
-  - TensorFlowLiteC (2.12.0):
-    - TensorFlowLiteC/Core (= 2.12.0)
-  - TensorFlowLiteC/Core (2.12.0)
-  - TensorFlowLiteC/CoreML (2.12.0):
-    - TensorFlowLiteC/Core
-  - TensorFlowLiteC/Metal (2.12.0):
-    - TensorFlowLiteC/Core
-  - TensorFlowLiteSwift (2.12.0):
-    - TensorFlowLiteSwift/Core (= 2.12.0)
-  - TensorFlowLiteSwift/Core (2.12.0):
-    - TensorFlowLiteC (= 2.12.0)
-  - TensorFlowLiteSwift/CoreML (2.12.0):
-    - TensorFlowLiteC/CoreML (= 2.12.0)
-    - TensorFlowLiteSwift/Core (= 2.12.0)
-  - TensorFlowLiteSwift/Metal (2.12.0):
-    - TensorFlowLiteC/Metal (= 2.12.0)
-    - TensorFlowLiteSwift/Core (= 2.12.0)
-  - tflite_flutter (0.0.1):
-    - Flutter
-    - TensorFlowLiteSwift (= 2.12.0)
-    - TensorFlowLiteSwift/CoreML (= 2.12.0)
-    - TensorFlowLiteSwift/Metal (= 2.12.0)
 
 DEPENDENCIES:
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
@@ -40,12 +18,6 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
-  - tflite_flutter (from `.symlinks/plugins/tflite_flutter/ios`)
-
-SPEC REPOS:
-  trunk:
-    - TensorFlowLiteC
-    - TensorFlowLiteSwift
 
 EXTERNAL SOURCES:
   audioplayers_darwin:
@@ -58,8 +30,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqflite_darwin:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
-  tflite_flutter:
-    :path: ".symlinks/plugins/tflite_flutter/ios"
 
 SPEC CHECKSUMS:
   audioplayers_darwin: ccf9c770ee768abb07e26d90af093f7bab1c12ab
@@ -67,9 +37,6 @@ SPEC CHECKSUMS:
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
-  TensorFlowLiteC: 20785a69299185a379ba9852b6625f00afd7984a
-  TensorFlowLiteSwift: 3a4928286e9e35bdd3e17970f48e53c80d25e793
-  tflite_flutter: 64b192e11352fe36943ab6656e1d49207f1a5595
 
 PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
 

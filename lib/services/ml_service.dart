@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 // import 'package:tflite_flutter/tflite_flutter.dart';  // Temporarily disabled
 
 class MLService {
@@ -160,8 +161,8 @@ class MLService {
   }
 
   void dispose() {
-    _interpreter?.close();
-    _interpreter = null;
+    // _interpreter?.close();  // Temporarily disabled
+    // _interpreter = null;    // Temporarily disabled
     _isInitialized = false;
   }
 } 

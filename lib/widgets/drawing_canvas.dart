@@ -75,6 +75,7 @@ class _DrawingCanvasState extends State<DrawingCanvas> {
             top: 8,
             right: 8,
             child: FloatingActionButton.small(
+              heroTag: null, // Disable hero animation on iOS
               onPressed: _clearCanvas,
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,

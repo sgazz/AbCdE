@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/home_screen.dart';
 import 'screens/writing_screen.dart';
 import 'screens/lessons_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/demo_screen.dart';
 import 'models/letter.dart';
+import 'models/lesson.dart';
 import 'utils/constants.dart';
 
 void main() {
@@ -54,7 +54,7 @@ class WritingLearningApp extends StatelessWidget {
             ),
           ),
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSizes.borderRadius),

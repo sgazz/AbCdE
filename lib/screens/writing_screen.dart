@@ -241,21 +241,26 @@ class _WritingScreenState extends State<WritingScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton.icon(
-                  onPressed: _isAnalyzing ? null : _analyzeDrawing,
-                  icon: _isAnalyzing
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check),
-                  label: Text(_isAnalyzing ? 'Analiziram...' : 'Analiziraj'),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _isAnalyzing ? null : _analyzeDrawing,
+                    icon: _isAnalyzing
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.check),
+                    label: Text(_isAnalyzing ? 'Analiziram...' : 'Analiziraj'),
+                  ),
                 ),
-                OutlinedButton.icon(
-                  onPressed: _resetCanvas,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Ponovo'),
+                const SizedBox(width: AppSizes.smallPadding),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _resetCanvas,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Ponovo'),
+                  ),
                 ),
               ],
             ),
@@ -301,41 +306,46 @@ class _WritingScreenState extends State<WritingScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TraceScreen(
-                          letter: widget.letter,
-                          alphabetType: widget.alphabetType,
-                          writingStyle: widget.writingStyle,
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TraceScreen(
+                            letter: widget.letter,
+                            alphabetType: widget.alphabetType,
+                            writingStyle: widget.writingStyle,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.touch_app),
-                  label: const Text('Prati liniju'),
+                      );
+                    },
+                    icon: const Icon(Icons.touch_app),
+                    label: const Text('Prati liniju'),
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiplayerGame(
-                          letter: widget.letter,
-                          onScoreUpdate: (score) {
-                            // Handle score update
-                          },
-                          onGameComplete: () {
-                            // Handle game completion
-                          },
+                const SizedBox(width: AppSizes.smallPadding),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MultiplayerGame(
+                            letter: widget.letter,
+                            onScoreUpdate: (score) {
+                              // Handle score update
+                            },
+                            onGameComplete: () {
+                              // Handle game completion
+                            },
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.emoji_events),
-                  label: const Text('Takmičenje'),
+                      );
+                    },
+                    icon: const Icon(Icons.emoji_events),
+                    label: const Text('Takmičenje'),
+                  ),
                 ),
                 TextButton.icon(
                   onPressed: () {

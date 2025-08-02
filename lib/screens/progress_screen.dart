@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_progress.dart';
+import '../models/letter.dart';
 import '../services/progress_service.dart';
 import '../widgets/star_rating.dart';
 import '../utils/constants.dart';
@@ -145,6 +146,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         padding: const EdgeInsets.all(AppSizes.padding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
@@ -161,13 +163,17 @@ class _ProgressScreenState extends State<ProgressScreen> {
               ),
             ),
             const SizedBox(height: AppSizes.smallPadding),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
+            Flexible(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
-              textAlign: TextAlign.center,
             ),
           ],
         ),

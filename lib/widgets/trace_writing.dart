@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../models/letter.dart';
 import '../utils/constants.dart';
 
 class TraceWriting extends StatefulWidget {
@@ -358,6 +359,7 @@ class _TraceWritingState extends State<TraceWriting>
               mainAxisSize: MainAxisSize.min,
               children: [
                 FloatingActionButton.small(
+                  heroTag: null, // Disable hero animation on iOS
                   onPressed: _reset,
                   backgroundColor: AppColors.secondary,
                   foregroundColor: Colors.white,

@@ -274,7 +274,7 @@ class _ProgressIndicatorState extends State<ProgressIndicator>
             return Container(
               height: widget.height,
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: AppColors.neutral200,
                 borderRadius: BorderRadius.circular(widget.height / 2),
               ),
               child: FractionallySizedBox(

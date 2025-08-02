@@ -4,9 +4,11 @@ import '../widgets/star_rating.dart';
 import '../services/ml_service.dart';
 import '../services/audio_service.dart';
 import '../services/progress_service.dart';
+import '../services/haptic_service.dart';
 import '../models/letter.dart';
 import '../screens/trace_screen.dart';
 import '../widgets/multiplayer_game.dart';
+import '../widgets/gesture_interactions.dart';
 import '../utils/constants.dart';
 
 class WritingScreen extends StatefulWidget {
@@ -184,195 +186,601 @@ class _WritingScreenState extends State<WritingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Naučite slovo ${widget.letter}'),
-        actions: [
-          IconButton(
-            onPressed: _playInstruction,
-            icon: const Icon(Icons.volume_up),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.background,
+              AppColors.neutral50,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSizes.padding),
+            child: Column(
+              children: [
+                // Header
+                _buildHeader(),
+                const SizedBox(height: AppSizes.largeSpacing),
+                
+                // Instructions card
+                _buildInstructionsCard(),
+                const SizedBox(height: AppSizes.padding),
+                
+                // Drawing canvas
+                Expanded(
+                  child: _buildDrawingSection(),
+                ),
+                
+                const SizedBox(height: AppSizes.padding),
+                
+                // Controls
+                _buildControls(),
+                
+                const SizedBox(height: AppSizes.padding),
+                
+                // Results
+                if (_stars > 0) _buildResults(),
+                
+                const SizedBox(height: AppSizes.padding),
+                
+                // Additional options
+                _buildAdditionalOptions(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.padding),
+      decoration: BoxDecoration(
+        gradient: AppColors.primaryGradient,
+        borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSizes.padding),
-        child: Column(
-          children: [
-            // Instrukcije
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSizes.padding),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.edit,
-                      color: AppColors.primary,
-                      size: AppSizes.iconSize,
-                    ),
-                    const SizedBox(width: AppSizes.smallPadding),
-                    Expanded(
-                      child: Text(
-                        'Nacrtajte slovo "${widget.letter}" u polju ispod',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSizes.smallPadding),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(AppSizes.borderRadius),
             ),
-            
-            const SizedBox(height: AppSizes.padding),
-            
-            // Drawing canvas
-            Center(
-              child: DrawingCanvas(
-                targetLetter: widget.letter,
-                onDrawingComplete: _onDrawingComplete,
-                showGrid: true,
-                showTargetLetter: true,
-              ),
+            child: const Icon(
+              Icons.edit,
+              color: Colors.white,
+              size: AppSizes.largeIconSize,
             ),
-            
-            const SizedBox(height: AppSizes.padding),
-            
-            // Kontrole
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          ),
+          const SizedBox(width: AppSizes.padding),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _isAnalyzing ? null : _analyzeDrawing,
-                    icon: _isAnalyzing
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.check),
-                    label: Text(_isAnalyzing ? 'Analiziram...' : 'Analiziraj'),
-                  ),
-                ),
-                const SizedBox(width: AppSizes.smallPadding),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _resetCanvas,
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Ponovo'),
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: AppSizes.padding),
-            
-            // Rezultati
-            if (_stars > 0) ...[
-              AnimatedStarRating(stars: _stars),
-              const SizedBox(height: AppSizes.smallPadding),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSizes.padding,
-                  vertical: AppSizes.smallPadding,
-                ),
-                decoration: BoxDecoration(
-                  color: _feedbackColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppSizes.borderRadius),
-                  border: Border.all(color: _feedbackColor.withOpacity(0.3)),
-                ),
-                child: Text(
-                  _feedback,
-                  style: TextStyle(
-                    color: _feedbackColor,
+                Text(
+                  'Slovo ${widget.letter}',
+                  style: const TextStyle(
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    color: Colors.white,
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSizes.smallPadding),
-              Text(
-                'Tačnost: ${(_accuracy * 100).toStringAsFixed(1)}%',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-            
-            const Spacer(),
-            
-            // Dodatne opcije
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                                    ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TraceScreen(
-                          letter: widget.letter,
-                          alphabetType: widget.alphabetType,
-                          writingStyle: widget.writingStyle,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.touch_app),
-                  label: const Text('Prati liniju'),
-                ),
-                const SizedBox(width: AppSizes.smallPadding),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiplayerGame(
-                          letter: widget.letter,
-                          onScoreUpdate: (score) {
-                            // Handle score update
-                          },
-                          onGameComplete: () {
-                            // Handle game completion
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.emoji_events),
-                  label: const Text('Takmičenje'),
-                ),
-                  ],
-                ),
-                const SizedBox(height: AppSizes.smallPadding),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                                    TextButton.icon(
-                  onPressed: () {
-                    // Navigacija na sledeće slovo
-                  },
-                  icon: const Icon(Icons.skip_next),
-                  label: const Text('Sledeće'),
-                ),
-                const SizedBox(width: AppSizes.smallPadding),
-                TextButton.icon(
-                  onPressed: () {
-                    // Navigacija na napredak
-                  },
-                  icon: const Icon(Icons.assessment),
-                  label: const Text('Napredak'),
-                ),
-                  ],
+                const SizedBox(height: AppSizes.smallSpacing),
+                Text(
+                  '${widget.alphabetType.name} - ${widget.writingStyle.name}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructionsCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.padding),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neutral200.withOpacity(0.5),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSizes.smallPadding),
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppSizes.borderRadius),
+            ),
+            child: Icon(
+              Icons.lightbulb_outline,
+              color: AppColors.secondary,
+              size: AppSizes.iconSize,
+            ),
+          ),
+          const SizedBox(width: AppSizes.padding),
+          Expanded(
+            child: Text(
+              'Nacrtajte slovo "${widget.letter}" u polju ispod',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawingSection() {
+    return GestureInteractions.pinch(
+      onPinch: (scale) {
+        // Handle pinch to zoom canvas
+        HapticService().light();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.neutral200.withOpacity(0.5),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+          child: DrawingCanvas(
+            targetLetter: widget.letter,
+            onDrawingComplete: _onDrawingComplete,
+            showGrid: true,
+            showTargetLetter: true,
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildControls() {
+    return Row(
+      children: [
+        // Analyze button
+        Expanded(
+          child: GestureInteractions.longPress(
+            onLongPress: () {
+              // Quick analyze with haptic feedback
+              HapticService().medium();
+              _analyzeDrawing();
+            },
+            child: Container(
+              height: AppSizes.largeButtonHeight,
+              decoration: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  onTap: () {
+                    HapticService().selection();
+                    _isAnalyzing ? null : _analyzeDrawing();
+                  },
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_isAnalyzing)
+                          const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        else
+                          const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                            size: AppSizes.iconSize,
+                          ),
+                        const SizedBox(width: AppSizes.smallPadding),
+                        Text(
+                          _isAnalyzing ? 'Analiziram...' : 'Analiziraj',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        
+        const SizedBox(width: AppSizes.padding),
+        
+        // Reset button
+        Expanded(
+          child: GestureInteractions.doubleTap(
+            onDoubleTap: () {
+              // Double tap to reset with haptic feedback
+              HapticService().warning();
+              _resetCanvas();
+            },
+            child: Container(
+              height: AppSizes.largeButtonHeight,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                border: Border.all(color: AppColors.neutral200),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.neutral200.withOpacity(0.5),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  onTap: () {
+                    HapticService().light();
+                    _resetCanvas();
+                  },
+                  child: const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.refresh,
+                          color: AppColors.primary,
+                          size: AppSizes.iconSize,
+                        ),
+                        SizedBox(width: AppSizes.smallPadding),
+                        Text(
+                          'Ponovo',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResults() {
+    return Container(
+      padding: const EdgeInsets.all(AppSizes.padding),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neutral200.withOpacity(0.5),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          AnimatedStarRating(stars: _stars),
+          const SizedBox(height: AppSizes.smallPadding),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.padding,
+              vertical: AppSizes.smallPadding,
+            ),
+            decoration: BoxDecoration(
+              color: _feedbackColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(AppSizes.borderRadius),
+              border: Border.all(color: _feedbackColor.withOpacity(0.3)),
+            ),
+            child: Text(
+              _feedback,
+              style: TextStyle(
+                color: _feedbackColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSizes.smallPadding),
+          Text(
+            'Tačnost: ${(_accuracy * 100).toStringAsFixed(1)}%',
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.neutral600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdditionalOptions() {
+    return Column(
+      children: [
+        // First row
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: AppSizes.buttonHeight,
+                decoration: BoxDecoration(
+                  gradient: AppColors.secondaryGradient,
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.secondary.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TraceScreen(
+                            letter: widget.letter,
+                            alphabetType: widget.alphabetType,
+                            writingStyle: widget.writingStyle,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.touch_app,
+                            color: Colors.white,
+                            size: AppSizes.iconSize,
+                          ),
+                          SizedBox(width: AppSizes.smallPadding),
+                          Text(
+                            'Prati liniju',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+            const SizedBox(width: AppSizes.padding),
+            
+            Expanded(
+              child: Container(
+                height: AppSizes.buttonHeight,
+                decoration: BoxDecoration(
+                  gradient: AppColors.successGradient,
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.successGreen.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MultiplayerGame(
+                            letter: widget.letter,
+                            onScoreUpdate: (score) {
+                              // Handle score update
+                            },
+                            onGameComplete: () {
+                              // Handle game completion
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.emoji_events,
+                            color: Colors.white,
+                            size: AppSizes.iconSize,
+                          ),
+                          SizedBox(width: AppSizes.smallPadding),
+                          Text(
+                            'Takmičenje',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        
+        const SizedBox(height: AppSizes.padding),
+        
+        // Second row
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                height: AppSizes.buttonHeight,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  border: Border.all(color: AppColors.neutral200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.neutral200.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                    onTap: () {
+                      // Navigacija na sledeće slovo
+                    },
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.skip_next,
+                            color: AppColors.primary,
+                            size: AppSizes.iconSize,
+                          ),
+                          SizedBox(width: AppSizes.smallPadding),
+                          Text(
+                            'Sledeće',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+            const SizedBox(width: AppSizes.padding),
+            
+            Expanded(
+              child: Container(
+                height: AppSizes.buttonHeight,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                  border: Border.all(color: AppColors.neutral200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.neutral200.withOpacity(0.5),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
+                    onTap: () {
+                      // Navigacija na napredak
+                    },
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.assessment,
+                            color: AppColors.secondary,
+                            size: AppSizes.iconSize,
+                          ),
+                          SizedBox(width: AppSizes.smallPadding),
+                          Text(
+                            'Napredak',
+                            style: TextStyle(
+                              color: AppColors.secondary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 } 

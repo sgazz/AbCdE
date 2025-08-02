@@ -181,6 +181,8 @@ class LanguageOption {
     required this.nativeName,
     required this.flag,
   });
+
+  String get displayName => nativeName.isNotEmpty ? nativeName : name;
 }
 
 // Difficulty Levels

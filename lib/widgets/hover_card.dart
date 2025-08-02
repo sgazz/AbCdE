@@ -47,7 +47,13 @@ class _HoverCardState extends State<HoverCard> {
                     offset: const Offset(0, 8),
                   ),
                 ]
-              : AppShadows.cardShadow,
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: widget.child,
       ),

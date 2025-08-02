@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/drawing_canvas.dart';
+import '../widgets/advanced_drawing_canvas.dart';
+import '../widgets/real_time_feedback_widget.dart';
 import '../widgets/star_rating.dart';
-import '../services/ml_service.dart';
+import '../services/advanced_ml_service.dart';
 import '../services/audio_service.dart';
 import '../services/progress_service.dart';
 import '../services/haptic_service.dart';
@@ -29,7 +30,7 @@ class WritingScreen extends StatefulWidget {
 
 class _WritingScreenState extends State<WritingScreen>
     with TickerProviderStateMixin {
-  final MLService _mlService = MLService.instance;
+  final AdvancedMLService _mlService = AdvancedMLService.instance;
   final AudioService _audioService = AudioService.instance;
   final ProgressService _progressService = ProgressService.instance;
   
@@ -39,6 +40,11 @@ class _WritingScreenState extends State<WritingScreen>
   double _accuracy = 0.0;
   String _feedback = '';
   Color _feedbackColor = AppColors.successGreen;
+  
+  // Real-time analysis state
+  RealTimeLetterAnalysis? _currentAnalysis;
+  StrokeAnalysis? _currentStrokeAnalysis;
+  bool _showRealTimeFeedback = true;
   
   late AnimationController _feedbackController;
   late Animation<double> _feedbackAnimation;
@@ -76,6 +82,23 @@ class _WritingScreenState extends State<WritingScreen>
     });
   }
 
+  void _onRealTimeAnalysis(RealTimeLetterAnalysis analysis) {
+    setState(() {
+      _currentAnalysis = analysis;
+      _accuracy = analysis.accuracy;
+      _stars = analysis.stars;
+    });
+    
+    // Haptic feedback
+    if (analysis.stars >= 4) {
+      HapticService().success();
+    } else if (analysis.stars >= 2) {
+      HapticService().warning();
+    } else {
+      HapticService().error();
+    }
+  }
+
   Future<void> _analyzeDrawing() async {
     if (_currentStrokes.isEmpty) {
       _showFeedback('Nacrtajte slovo prvo!', AppColors.warningOrange);
@@ -87,34 +110,31 @@ class _WritingScreenState extends State<WritingScreen>
     });
 
     try {
-      // ML analiza
-      Map<String, double> predictions = await _mlService.recognizeLetter(_currentStrokes);
-      
-      // Računanje tačnosti
-      double accuracy = _mlService.calculateAccuracy(widget.letter, predictions);
-      int stars = _mlService.calculateStars(accuracy);
-      
-      // Generisanje feedback-a
-      String feedback = _generateFeedback(stars, accuracy);
-      Color feedbackColor = _getFeedbackColor(stars);
+      // Napredna ML analiza
+      RealTimeLetterAnalysis analysis = await _mlService.analyzeLetterInRealTime(
+        _currentStrokes,
+        widget.letter,
+        widget.alphabetType,
+      );
       
       setState(() {
-        _accuracy = accuracy;
-        _stars = stars;
-        _feedback = feedback;
-        _feedbackColor = feedbackColor;
+        _currentAnalysis = analysis;
+        _accuracy = analysis.accuracy;
+        _stars = analysis.stars;
         _isAnalyzing = false;
       });
-
-      // Puštanje zvuka
-      if (stars > 0) {
-        await _audioService.playStarSound(stars);
+      
+      // Haptic feedback
+      if (analysis.stars >= 4) {
+        HapticService().success();
+      } else if (analysis.stars >= 2) {
+        HapticService().warning();
       } else {
-        await _audioService.playErrorSound();
+        HapticService().error();
       }
-
-      // Prikaz feedback-a
-      _showFeedback(_feedback, _feedbackColor);
+      
+      // Audio feedback
+      await _audioService.playStarSound(analysis.stars);
       
       // Čuvanje napretka
       await _saveProgress();
@@ -219,6 +239,22 @@ class _WritingScreenState extends State<WritingScreen>
                 
                 // Controls
                 _buildControls(),
+                
+                const SizedBox(height: AppSizes.padding),
+                
+                // Real-time feedback
+                if (_showRealTimeFeedback && _currentAnalysis != null)
+                  RealTimeFeedbackWidget(
+                    analysis: _currentAnalysis,
+                    strokeAnalysis: _currentStrokeAnalysis,
+                    isVisible: _currentAnalysis != null,
+                    onDismiss: () {
+                      setState(() {
+                        _currentAnalysis = null;
+                        _currentStrokeAnalysis = null;
+                      });
+                    },
+                  ),
                 
                 const SizedBox(height: AppSizes.padding),
                 
@@ -358,11 +394,15 @@ class _WritingScreenState extends State<WritingScreen>
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
-          child: DrawingCanvas(
+          child: AdvancedDrawingCanvas(
             targetLetter: widget.letter,
+            alphabetType: widget.alphabetType,
+            writingStyle: widget.writingStyle,
             onDrawingComplete: _onDrawingComplete,
+            onRealTimeAnalysis: _onRealTimeAnalysis,
             showGrid: true,
             showTargetLetter: true,
+            showRealTimeFeedback: _showRealTimeFeedback,
           ),
         ),
       ),
@@ -751,22 +791,25 @@ class _WritingScreenState extends State<WritingScreen>
                   child: InkWell(
                     borderRadius: BorderRadius.circular(AppSizes.largeBorderRadius),
                     onTap: () {
-                      // Navigacija na napredak
+                      setState(() {
+                        _showRealTimeFeedback = !_showRealTimeFeedback;
+                      });
+                      HapticService().selection();
                     },
-                    child: const Center(
+                    child: Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.assessment,
-                            color: AppColors.secondary,
+                            _showRealTimeFeedback ? Icons.visibility : Icons.visibility_off,
+                            color: _showRealTimeFeedback ? AppColors.successGreen : AppColors.neutral400,
                             size: AppSizes.iconSize,
                           ),
                           SizedBox(width: AppSizes.smallPadding),
                           Text(
-                            'Napredak',
+                            'Real-time',
                             style: TextStyle(
-                              color: AppColors.secondary,
+                              color: _showRealTimeFeedback ? AppColors.successGreen : AppColors.neutral400,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                             ),

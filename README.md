@@ -1,6 +1,16 @@
-# Aplikacija za učenje pisanja
+# 📚 AbCdE - Aplikacija za učenje pisanja
 
 Interaktivna aplikacija za učenje pisanja slova namenjena deci i svima koji žele da nauče da pišu.
+
+## 🚀 **Live Demo**
+
+Aplikacija je dostupna na: [https://github.com/sgazz/AbCdE.git](https://github.com/sgazz/AbCdE.git)
+
+## 📱 **Screenshots**
+
+*Screenshots će biti dodati nakon testiranja*
+
+## 🎯 **Funkcionalnosti**
 
 ## 🎯 Funkcionalnosti
 
@@ -77,14 +87,33 @@ lib/
 ### ⚡ Instalacija
 ```bash
 # Kloniranje projekta
-git clone <repository-url>
-cd writing_learning_app
+git clone https://github.com/sgazz/AbCdE.git
+cd AbCdE
 
 # Instalacija zavisnosti
 flutter pub get
 
 # Pokretanje aplikacije
 flutter run
+```
+
+### 📱 Pokretanje na različitim platformama
+
+#### **iOS Simulator:**
+```bash
+flutter run -d "iPhone 16 Pro" --debug
+```
+
+#### **Android Emulator:**
+```bash
+flutter emulators --launch <emulator_name>
+flutter run --debug
+```
+
+#### **Fizički uređaj:**
+```bash
+flutter devices  # Proveri dostupne uređaje
+flutter run -d <device_id> --debug
 ```
 
 ### 📱 Podržani uređaji

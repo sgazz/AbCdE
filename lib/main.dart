@@ -8,6 +8,8 @@ import 'screens/demo_screen.dart';
 import 'models/letter.dart';
 import 'models/lesson.dart';
 import 'utils/constants.dart';
+import 'theme/app_theme.dart';
+import 'services/settings_service.dart';
 
 void main() {
   runApp(const WritingLearningApp());
@@ -18,58 +20,22 @@ class WritingLearningApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppStrings.appTitle,
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-        primaryColor: AppColors.primary,
-        primaryColorDark: AppColors.primaryVariant,
-        colorScheme: const ColorScheme.light(
-          primary: AppColors.primary,
-          primaryContainer: AppColors.primaryVariant,
-          secondary: AppColors.secondary,
-          secondaryContainer: AppColors.secondaryVariant,
-          surface: AppColors.surface,
-          background: AppColors.background,
-          error: AppColors.error,
-          onPrimary: AppColors.onPrimary,
-          onSecondary: AppColors.onSecondary,
-          onSurface: AppColors.onSurface,
-          onBackground: AppColors.onBackground,
-          onError: AppColors.onError,
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.onPrimary,
-          elevation: 0,
-          centerTitle: true,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.onPrimary,
-            minimumSize: const Size(double.infinity, AppSizes.buttonHeight),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.borderRadius),
-            ),
-          ),
-        ),
-        cardTheme: CardThemeData(
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSizes.borderRadius),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppSizes.borderRadius),
-          ),
-          contentPadding: const EdgeInsets.all(AppSizes.padding),
-        ),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsService.instance),
+      ],
+      child: Consumer<SettingsService>(
+        builder: (context, settingsService, child) {
+          return MaterialApp(
+            title: AppStrings.appTitle,
+            theme: settingsService.getTheme(),
+            darkTheme: AppTheme.darkTheme,
+            themeMode: settingsService.themeProvider.themeMode,
+            home: const HomeScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
-      home: const HomeScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

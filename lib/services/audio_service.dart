@@ -1,5 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:io';
+import '../utils/error_handler.dart';
+import '../utils/memory_manager.dart';
 
 class AudioService {
   static AudioService? _instance;
@@ -18,7 +20,7 @@ class AudioService {
       String audioPath = 'assets/audio/letters/$letter.mp3';
       await _audioPlayer.play(AssetSource(audioPath));
     } catch (e) {
-      print('Error playing letter audio: $e');
+      ErrorHandler.handleAudioError(e, StackTrace.current, context: 'playLetterAudio');
       // Fallback - koristimo text-to-speech ili osnovni zvuk
       await _playFallbackAudio();
     }
@@ -29,7 +31,7 @@ class AudioService {
       String audioPath = 'assets/audio/instructions/$instruction.mp3';
       await _audioPlayer.play(AssetSource(audioPath));
     } catch (e) {
-      print('Error playing instruction: $e');
+      ErrorHandler.handleAudioError(e, StackTrace.current, context: 'playInstruction');
     }
   }
 
@@ -58,7 +60,7 @@ class AudioService {
       String audioPath = 'assets/audio/effects/$effectName.mp3';
       await _effectPlayers[effectName]!.play(AssetSource(audioPath));
     } catch (e) {
-      print('Error playing effect $effectName: $e');
+      ErrorHandler.handleAudioError(e, StackTrace.current, context: '_playEffect');
     }
   }
 

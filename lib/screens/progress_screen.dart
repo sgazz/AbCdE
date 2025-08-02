@@ -4,6 +4,8 @@ import '../models/letter.dart';
 import '../services/progress_service.dart';
 import '../widgets/star_rating.dart';
 import '../utils/constants.dart';
+import '../widgets/animated_progress.dart';
+import '../widgets/interactive_tooltip.dart';
 
 class ProgressScreen extends StatefulWidget {
   const ProgressScreen({super.key});
@@ -154,8 +156,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
               color: color,
             ),
             const SizedBox(height: AppSizes.smallPadding),
-            Text(
-              value,
+            AnimatedCounter(
+              value: int.tryParse(value.replaceAll('%', '').replaceAll('.', '')) ?? 0,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -217,20 +219,33 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   ],
                 ),
                 const SizedBox(height: AppSizes.smallPadding),
-                LinearProgressIndicator(
+                AnimatedProgressIndicator(
                   value: _userProgress!.letterProgress.length > 0
-                      ? _userProgress!.masteredLetters / _userProgress!.letterProgress.length
-                      : 0,
-                  backgroundColor: Colors.grey[300],
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      ? _userProgress!.masteredLetters.toDouble()
+                      : 0.0,
+                  maxValue: _userProgress!.letterProgress.length > 0
+                      ? _userProgress!.letterProgress.length.toDouble()
+                      : 1.0,
+                  progressColor: AppColors.primary,
+                  height: 8,
                 ),
                 const SizedBox(height: AppSizes.smallPadding),
-                Text(
-                  'Ukupno tačnost: ${(_userProgress!.overallAccuracy * 100).toStringAsFixed(1)}%',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Ukupno tačnost: ${(_userProgress!.overallAccuracy * 100).toStringAsFixed(1)}%',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                    InfoTooltip(
+                      info: 'Ova vrednost pokazuje koliko dobro crtate slova u odnosu na idealnu liniju.',
+                      child: const SizedBox.shrink(),
+                    ),
+                  ],
                 ),
               ],
             ),
